@@ -7,9 +7,13 @@ import Alert from "./components/alert";
 import Divider from "./components/divider";
 import InputSingleFile from "./components/input-single-file";
 import { useForm } from "react-hook-form";
+import ImageFilePreview from "./components/image-file-preview";
 
 export default function App() {
   const form = useForm();
+  const file = form.watch("file");
+
+  const fileSrc = file?.[0] ? URL.createObjectURL(file[0]) : undefined;
 
   return (
     <div className="grid gap-7 p-6">
@@ -58,6 +62,7 @@ export default function App() {
           allowedExtensions={["png", "jpg", "jpeg", "webp"]}
           maxFileSizeInMB={50}
           form={form}
+          replaceBy={<ImageFilePreview src={fileSrc} alt="Imagem" />}
           {...form.register("file")}
         />
       </div>
