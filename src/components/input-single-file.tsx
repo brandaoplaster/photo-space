@@ -1,16 +1,16 @@
 import React from "react";
-import { useWatch } from "react-hook-form";
 import { tv, type VariantProps } from "tailwind-variants";
 import Icon from "./icon";
 import Text, { textVariants } from "./text";
 import UploadFileIcon from "../assets/icons/upload-file.svg?react";
 import FileImageIcon from "../assets/icons/image.svg?react";
+import { useWatch } from "react-hook-form";
 
 export const inputSingleFileVariants = tv({
   base: `
     flex flex-col items-center justify-center w-full
     border border-solid border-border-primary
-    group-hover:border-border-active
+  group-hover:border-border-active
     rounded-lg gap-1 transition
   `,
   variants: {
@@ -43,6 +43,7 @@ interface InputSingleFileProps
   form: any;
   allowedExtensions: string[];
   maxFileSizeInMB: number;
+  replaceBy: React.ReactNode;
 }
 
 export default function InputSingleFile({
@@ -51,6 +52,7 @@ export default function InputSingleFile({
   form,
   allowedExtensions,
   maxFileSizeInMB,
+  replaceBy,
   ...props
 }: InputSingleFileProps) {
   const formValues = useWatch({ control: form.control });
@@ -99,13 +101,12 @@ export default function InputSingleFile({
                 variant="label-medium"
                 className="text-placeholder text-center"
               >
-                Drag and drop a file here
+                drag the file here
                 <br />
                 Or click to browse
               </Text>
             </div>
           </div>
-
           <div className="flex flex-col gap-1 mt-1">
             {formFile && !isValidExtension() && (
               <Text variant="label-small" className="text-accent-red">
@@ -114,41 +115,44 @@ export default function InputSingleFile({
             )}
             {formFile && !isValidSize() && (
               <Text variant="label-small" className="text-accent-red">
-                File size exceeds the maximum limit.
+                File size exceeds the limit of {maxFileSizeInMB}MB
               </Text>
             )}
             {error && (
               <Text variant="label-small" className="text-accent-red">
-                Error in the field
+                Error uploading file
               </Text>
             )}
           </div>
         </>
       ) : (
-        <div className="flex gap-3 items-center border border-solid border-border-primary mt-5 p-3 rounded">
-          <Icon svg={FileImageIcon} className="fill-white w-6 h-6" />
-          <div className="flex flex-col">
-            <div className="truncate max-w-80">
-              <Text variant="label-medium" className="text-placeholder">
-                {formFile.name}
-              </Text>
-            </div>
-            <div className="flex">
-              <button
-                type="button"
-                className={textVariants({
-                  variant: "label-small",
-                  className: "text-accent-red cursor-pointer hover:underline",
-                })}
-                onClick={() => {
-                  form.setValue(name, undefined);
-                }}
-              >
-                Remove
-              </button>
+        <>
+          {replaceBy}
+          <div className="flex gap-3 items-center border border-solid border-border-primary mt-5 p-3 rounded">
+            <Icon svg={FileImageIcon} className="fill-white w-6 h-6" />
+            <div className="flex flex-col">
+              <div className="truncate max-w-80">
+                <Text variant="label-medium" className="text-placeholder">
+                  {formFile.name}
+                </Text>
+              </div>
+              <div className="flex">
+                <button
+                  type="button"
+                  className={textVariants({
+                    variant: "label-small",
+                    className: "text-accent-red cursor-pointer hover:underline",
+                  })}
+                  onClick={() => {
+                    form.setValue(name, undefined);
+                  }}
+                >
+                  Remove
+                </button>
+              </div>
             </div>
           </div>
-        </div>
+        </>
       )}
     </div>
   );
